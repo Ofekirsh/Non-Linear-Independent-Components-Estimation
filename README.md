@@ -3,9 +3,10 @@
 This project implements the models proposed in [NICE: Non-linear Independent Components Estimation](https://arxiv.org/abs/1410.8516)
 written by Laurent Dinh, David Krueger and Yoshua Bengio.
 
-The models were ran over the following datasets:
+The model is trained separately on two datasets:
 - MNIST
 - MNIST Fashion
+
 The results of the models can be found in [results.pdf](./results.pdf).
 
 <img src="samples/fashion-mnist_batch128_coupling4_coupling_typeadditive_mid1000_hidden5_.ptepoch0.png" >
