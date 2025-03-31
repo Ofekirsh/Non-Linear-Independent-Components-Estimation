@@ -1,10 +1,9 @@
 import torch
 import torch.nn as nn
-from torch.distributions.transforms import Transform, SigmoidTransform, AffineTransform
+from torch.distributions.transforms import SigmoidTransform, AffineTransform
 from torch.distributions import Uniform, TransformedDistribution
 import numpy as np
-import torch.nn.init as init
-import torch.nn.functional as F
+
 
 
 class AdditiveCoupling(nn.Module):
