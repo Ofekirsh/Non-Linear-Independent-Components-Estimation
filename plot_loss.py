@@ -32,10 +32,10 @@ def plot_train_test_loss(train_loss, test_loss, name):
     plt.savefig(f"plots/{name}", dpi=300)
     plt.show()
 
+
 if __name__ == '__main__':
     # Load the file and print its content
     file_path1 = "loss_lists/loss_train_fashion-mnist_adaptive.pkl"
-
 
     with open(file_path1, 'rb') as file:
         train_loss = pickle.load(file)
@@ -45,6 +45,5 @@ if __name__ == '__main__':
 
     with open(file_path2, 'rb') as file:
         test_loss = pickle.load(file)
-
 
     plot_train_test_loss(train_loss, test_loss, "Fashion-MNIST Adaptive")

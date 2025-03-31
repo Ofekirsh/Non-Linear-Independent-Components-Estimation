@@ -1,15 +1,10 @@
-"""NICE model
-"""
-
 import torch
 import torch.nn as nn
-from torch.distributions.transforms import Transform,SigmoidTransform,AffineTransform
+from torch.distributions.transforms import Transform, SigmoidTransform, AffineTransform
 from torch.distributions import Uniform, TransformedDistribution
 import numpy as np
 import torch.nn.init as init
 import torch.nn.functional as F
-"""Additive coupling layer.
-"""
 
 
 class AdditiveCoupling(nn.Module):
@@ -23,7 +18,6 @@ class AdditiveCoupling(nn.Module):
             mask_config: 1 if transform odd units, 0 if transform even units.
         """
         super(AdditiveCoupling, self).__init__()
-        #TODO fill in
         self.in_out_dim = in_out_dim
         self.mid_dim = mid_dim
         self.hidden = hidden
@@ -49,7 +43,6 @@ class AdditiveCoupling(nn.Module):
         Returns:
             transformed tensor and updated log-determinant of Jacobian.
         """
-        #TODO fill in
         """
         1.x1,x2 = split the vector x to odds and evens. 
         2.y1 = x1
@@ -86,7 +79,6 @@ class AffineCoupling(nn.Module):
             mask_config: 1 if transform odd units, 0 if transform even units.
         """
         super(AffineCoupling, self).__init__()
-        #TODO fill in
         self.in_out_dim = in_out_dim
         self.mid_dim = mid_dim
         self.hidden = hidden
@@ -124,8 +116,6 @@ class AffineCoupling(nn.Module):
         Returns:
             transformed tensor and updated log-determinant of Jacobian.
         """
-        #TODO fill in
-        # Split x into odd (x1) and even (x2) indices
         x1, x2 = x[:, self.mask_config::2], x[:, 1 - self.mask_config::2]
     
         # Compute b1 and b2 from MLP
@@ -146,10 +136,6 @@ class AffineCoupling(nn.Module):
         ordered_concat = [y1, y2] if self.mask_config == 0 else [y2, y1]
         y = torch.stack(ordered_concat, dim=2).view(-1, self.in_out_dim)
         return y, log_det_J
-
-
-"""Log-scaling layer.
-"""
 
 
 class Scaling(nn.Module):
@@ -173,12 +159,12 @@ class Scaling(nn.Module):
         Returns:
             transformed tensor and log-determinant of Jacobian.
         """
-        scale = torch.exp(self.scale) + self.eps
-        #TODO fill in
         """
         1. y = x * S
         2. log_det = sum of the elements in the diagonal S matrix
         """
+        scale = torch.exp(self.scale) + self.eps
+
         if reverse:
             # Inverse transformation: x = y / S
             y = x / scale
@@ -191,9 +177,6 @@ class Scaling(nn.Module):
         return y, log_det
 
 
-"""Standard logistic distribution.
-"""
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # Move the parameters of Uniform to the device
 uniform = Uniform(torch.tensor(0.).to(device), torch.tensor(1.).to(device))
@@ -204,9 +187,6 @@ affine_transform = AffineTransform(loc=0., scale=1.)
 
 # Now create the logistic distribution with the moved components
 logistic = TransformedDistribution(uniform, [sigmoid_transform.inv, affine_transform])
-
-"""NICE main model.
-"""
 
 
 class NICE(nn.Module):
@@ -223,6 +203,7 @@ class NICE(nn.Module):
         """
         super(NICE, self).__init__()
         self.device = device
+
         if prior == 'gaussian':
             self.prior = torch.distributions.Normal(
                 torch.tensor(0.).to(device), torch.tensor(1.).to(device))
@@ -230,13 +211,14 @@ class NICE(nn.Module):
             self.prior = logistic
         else:
             raise ValueError('Prior not implemented.')
+
         self.in_out_dim = in_out_dim
         self.mid_dim = mid_dim
         self.hidden = hidden
         self.coupling = coupling
         self.coupling_type = coupling_type
-        # TODO fill in
         self.scaling = Scaling(dim=in_out_dim)
+
         # Define coupling layers
         self.coupling_layers = nn.ModuleList()
         for i in range(self.coupling):
@@ -259,7 +241,6 @@ class NICE(nn.Module):
         Returns:
             transformed tensor in data space X.
         """
-        #TODO fill in
         x, _ = self.scaling(z, reverse=True)
         for layer in reversed(list(self.coupling_layers)):
             x, _ = layer(x, 0, reverse=True)
@@ -273,7 +254,6 @@ class NICE(nn.Module):
         Returns:
             transformed tensor in latent space Z and log determinant Jacobian
         """
-        #TODO fill in
         z = x
         log_det = 0
         for layer in self.coupling_layers:
@@ -308,7 +288,6 @@ class NICE(nn.Module):
             samples from the data space X.
         """
         z = self.prior.sample((size, self.in_out_dim)).to(self.device)
-        #TODO
         return self.f_inverse(z)
 
     def forward(self, x):

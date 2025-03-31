@@ -1,6 +1,3 @@
-"""Training procedure for NICE.
-"""
-
 import argparse
 import pickle
 
@@ -41,9 +38,9 @@ def test(flow, testloader, filename, epoch, sample_shape, device, should_we_samp
           samples = samples.view(-1,sample_shape[0],sample_shape[1],sample_shape[2])
           torchvision.utils.save_image(torchvision.utils.make_grid(samples),
                                        './samples/' + filename + 'epoch%d.png' % epoch)
-        #TODO full in
+
         for xs, _ in testloader:
-            xs = xs.view(xs.shape[0],xs.shape[1]*xs.shape[2]*xs.shape[3]).to(device) #change  shape from BxCxHxW to Bx(C*H*W)
+            xs = xs.view(xs.shape[0], xs.shape[1] * xs.shape[2] * xs.shape[3]).to(device)  # change  shape from BxCxHxW to Bx(C*H*W)
             loss = - flow(xs).mean()
             loss_inference += loss.item()
         loss_inference /= len(testloader)
@@ -100,7 +97,6 @@ def main(args):
     optimizer = torch.optim.Adam(
         flow.parameters(), lr=args.lr)
 
-    #TODO fill in
     loss_train = []
     loss_test = []
     for epoch in range(args.epochs):
